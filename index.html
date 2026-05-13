@@ -496,6 +496,115 @@ body::after {
 .album-view.active { display: block; }
 .hunt-view.hidden { display: none; }
 
+/* Celebration view (between hunt and game) */
+.celebration-view { display: none; }
+.celebration-view.active { display: block; }
+.celebration-video-wrap {
+  max-width: 720px;
+  margin: 40px auto 0;
+  padding: 0 4px;
+}
+.celebration-video-wrap .video-frame {
+  box-shadow: 0 24px 64px -16px rgba(0,0,0,0.7), 0 0 0 1px rgba(240,200,98,0.3);
+  margin-top: 0;
+}
+
+/* Game view */
+.game-view { display: none; }
+.game-view.active { display: block; }
+
+.game-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin: 32px auto 24px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  text-align: center;
+  min-width: 90px;
+}
+
+.stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(237,228,207,0.5);
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 36px;
+  color: var(--gold-bright);
+  text-shadow: 0 0 16px rgba(240,200,98,0.3);
+}
+
+.game-canvas-wrap {
+  position: relative;
+  max-width: 720px;
+  margin: 0 auto;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px -16px rgba(10,46,92,0.6), inset 0 0 0 1px rgba(240,200,98,0.2);
+}
+
+#antGame {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: linear-gradient(180deg, #1a3d1f 0%, #0d2a14 100%);
+  cursor: pointer;
+}
+
+.game-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(5,8,20,0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  transition: opacity 0.4s;
+}
+
+.game-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.overlay-content {
+  text-align: center;
+  max-width: 460px;
+}
+
+.overlay-content h2 {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 36px;
+  color: var(--cream);
+  margin-bottom: 16px;
+}
+
+.overlay-content p {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(237,228,207,0.8);
+  margin-bottom: 24px;
+}
+
+.overlay-content p strong {
+  color: var(--gold-bright);
+  font-weight: 600;
+}
+
 .album-header {
   text-align: center;
   padding: 48px 0 24px;
@@ -710,6 +819,10 @@ body::after {
   .coord-input { width: 120px; }
   .answer-row { flex-direction: column; }
   .answer-row .btn { width: 100%; }
+  .game-stats { gap: 16px; }
+  .stat-value { font-size: 28px; }
+  .overlay-content h2 { font-size: 26px; }
+  .overlay-content p { font-size: 14px; }
 }
 </style>
 </head>
@@ -824,6 +937,58 @@ body::after {
 
   </div>
 
+  <!-- Celebration video shown once after the TARDIS unlock -->
+  <div class="celebration-view" id="celebrationView">
+    <header class="header">
+      <div class="tag">⟡ You Did It ⟡</div>
+      <h1>Brilliant, <span class="accent">Zella</span></h1>
+      <div class="sub">~ a little something before the album ~</div>
+    </header>
+    <div class="celebration-video-wrap">
+      <div class="video-frame" id="celebrationVideoFrame">
+        <!-- Iframe or placeholder injected via JS based on CELEBRATION_VIDEO_ID -->
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:32px;">
+      <button class="btn" id="toGameBtn">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Leafcutter ant minigame -->
+  <div class="game-view" id="gameView">
+    <header class="header">
+      <div class="tag">⟡ One More Thing ⟡</div>
+      <h1>Help the <span class="accent">ants</span></h1>
+      <div class="sub">~ click the leaves to help the ants carry them home ~</div>
+    </header>
+
+    <div class="game-stats">
+      <div class="stat">
+        <div class="stat-label">Leaves Cut</div>
+        <div class="stat-value" id="leavesCut">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Time Left</div>
+        <div class="stat-value" id="timeLeft">45</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Goal</div>
+        <div class="stat-value">15</div>
+      </div>
+    </div>
+
+    <div class="game-canvas-wrap">
+      <canvas id="antGame" width="700" height="420"></canvas>
+      <div class="game-overlay" id="gameOverlay">
+        <div class="overlay-content">
+          <h2 id="overlayTitle">Ready?</h2>
+          <p id="overlayText">Click the green leaves before the ants carry them off-screen. Cut <strong>15 leaves</strong> in 45 seconds to unlock the album.</p>
+          <button class="btn" id="startGameBtn">Start</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="album-view" id="albumView">
     <header class="album-header">
       <div class="label">⟡ The TARDIS Opens ⟡</div>
@@ -860,61 +1025,61 @@ const clues = [
     // 1 — Lightbulb (the opener, kept easiest)
     riddle: "I am born of glass and threaded with fire,\nA small sun that hums on a copper wire.\nA boy once claimed I lived in his head —\nAnd on that absurd, glowing thread\nHe asked a girl to walk with him instead.\n\nWhat am I?",
     answers: ["lightbulb", "light bulb", "a lightbulb", "a light bulb", "the lightbulb", "bulb"],
-    video: null
+    video: "mOPSyG1-2LY"
   },
   {
     // 2 — Torque
     riddle: "I am the reason a wrench can win.\nI am the spin inside the spin.\nI'm what the door knows when it swings,\nThe quiet violence in turning things.\nA boy made a joke of me once, in a hall —\nAnd a girl laughed first, before falling at all.\n\nName me. (Five letters.)",
     answers: ["torque"],
-    video: null
+    video: "JAYUfQDHxE"
   },
   {
     // 3 — Ostensibly
     riddle: "I am the word that means it seems,\nA polished mask on simple themes.\nHe drops me into ordinary speech\nLike I'm a fruit just out of reach.\nYou tease the boy who can't let me go —\nWhat ten-letter word am I, that he loves so?",
     answers: ["ostensibly"],
-    video: null
+    video: "5SrQ8M7CUzo"
   },
   {
     // 4 — This Time Tomorrow
     riddle: "I am the song you sent him first —\nA British band, a wandering verse,\nAn airplane window, a hopeful spell,\nA promise dressed as a farewell.\nA boy looks down at a country small,\nAnd wonders where he'll be at all.\n\nName me.",
     answers: ["this time tomorrow"],
-    video: null
+    video: "59pAAfeOgpA"
   },
   {
     // 5 — American Spirit Yellows
     riddle: "I come in a hive of cardboard and gold,\nStriped like an insect, ten thousand sold.\nMy chief wears feathers, my smoke is true —\nA native bird in a yellow hue.\nThe sun on my pack is the color you choose,\nYou carry a swarm of me — name my hues.",
     answers: ["american spirit yellows", "american spirit yellow", "american spirits yellows", "american spirits yellow"],
-    video: null
+    video: "7fvSO1Ur12o"
   },
   {
     // 6 — I'm so in love with you
     riddle: "Three words were waiting at the door,\nBut three felt heavier than the floor.\nSo he reached for one to slip between —\nA small adverb to soften the scene.\nFive words now where three would do,\nA cowardly grace, an honest brew.\nThe extra word means very much,\nA quiet hand asking for touch.\n\nWhat did he say to you, then?",
     answers: ["i'm so in love with you", "im so in love with you", "i am so in love with you"],
-    video: null
+    video: "G9f6T3ivy5k"
   },
   {
     // 7 — Google
     riddle: "I am the name he calls you by\nWhen the answer falls out of the sky\nAnd lands, somehow, between your eyes.\nSix letters. A verb. A noun. A whole way\nOf knowing things he could not say.\n\nWhat does he call you?",
     answers: ["google"],
-    video: null
+    video: "zneUgUtUYi0"
   },
   {
     // 8 — Buddy
     riddle: "I am the softer of the two —\nThe one he says when reaching through\nThe dark to find your hand at night.\nFive letters. A small, plain light.\nNot clever. Not loud. Not new.\nJust the word that means: it's you.\n\nWhat is the name?",
     answers: ["buddy"],
-    video: null
+    video: "J5K3Zj92uBQ"
   },
   {
     // 9 — Bigger on the inside (Dr Who themed bridge)
     riddle: "I am the line every traveler knows,\nThe first surprised gasp when the blue door shows.\nFour small words for an impossible space —\nA universe folded inside one place.\nSay them aloud and the lock will turn:\n___ ___ ___ ___.\n\n(Four words. The Doctor's favorite trick.)",
     answers: ["bigger on the inside", "it's bigger on the inside", "its bigger on the inside"],
-    video: null
+    video: "SXBHsT2TODU"
   },
   {
     // 10 — Street name (final clue before the coordinate gate)
     riddle: "I am a building where minds are bent,\nWhere torque was taught and a boy was sent\nTo say a stupid thing to a girl one day.\nMy address has a number, a city, a way —\nBut you only need my street, plain and small.\nIt rhymes with fate. It rhymes with hall.\n\nWhat is my street?",
     answers: ["state", "state st", "state street", "s state", "s state st", "south state", "south state st", "south state street", "s state street"],
-    video: null
+    video: "qLqCL1ybYY"
   }
 ];
 
@@ -947,7 +1112,7 @@ function renderClue(idx) {
   if (clue.video) {
     videoHTML = `
       <div class="video-frame">
-        <iframe src="https://www.youtube.com/embed/${clue.video}?rel=0" allowfullscreen></iframe>
+        <iframe src="https://www.youtube.com/embed/${clue.video}?rel=0" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
       </div>`;
   } else {
     videoHTML = `
@@ -1108,7 +1273,10 @@ Format: <em>latitude, longitude</em></div>
       btn.disabled = true;
       coordIn.disabled = true;
       burstSparkles();
-      setTimeout(unlockAlbum, 900);
+      setTimeout(() => {
+        document.getElementById('huntView').classList.add('hidden');
+        showCelebration();
+      }, 900);
     } else {
       fb.textContent = 'close but not quite ♡';
       fb.className = 'feedback wrong';
@@ -1215,8 +1383,501 @@ document.querySelectorAll('.tab').forEach(t => {
   });
 });
 
+// ===========================================================
+// CELEBRATION VIDEO CONFIG
+// Once you have the special celebration video filmed,
+// replace null below with your unlisted YouTube video ID
+// (just the part after v= in the URL).
+// Example: const CELEBRATION_VIDEO_ID = "dQw4w9WgXcQ";
+// ===========================================================
+const CELEBRATION_VIDEO_ID = "zkYeLE_4Hso";
+
+function showCelebration() {
+  document.getElementById('huntView').classList.add('hidden');
+  document.getElementById('celebrationView').classList.add('active');
+
+  const frame = document.getElementById('celebrationVideoFrame');
+  if (CELEBRATION_VIDEO_ID) {
+    frame.innerHTML = `<iframe src="https://www.youtube.com/embed/${CELEBRATION_VIDEO_ID}?rel=0&autoplay=1" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+  } else {
+    frame.innerHTML = `
+      <div class="video-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/>
+        </svg>
+        <span>Celebration video · coming soon</span>
+      </div>`;
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('toGameBtn').addEventListener('click', () => {
+  // Stop the celebration iframe by clearing it (avoids audio bleed into the game)
+  document.getElementById('celebrationVideoFrame').innerHTML = '';
+  document.getElementById('celebrationView').classList.remove('active');
+  showGame();
+});
+
+// ===========================================================
+// LEAFCUTTER ANT MINIGAME
+// ===========================================================
+function showGame() {
+  document.getElementById('gameView').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+const GAME_GOAL = 15;
+const GAME_DURATION = 45; // seconds
+
+const canvas = document.getElementById('antGame');
+const ctx = canvas.getContext('2d');
+const overlay = document.getElementById('gameOverlay');
+const overlayTitle = document.getElementById('overlayTitle');
+const overlayText = document.getElementById('overlayText');
+const startBtn = document.getElementById('startGameBtn');
+const leavesCutEl = document.getElementById('leavesCut');
+const timeLeftEl = document.getElementById('timeLeft');
+
+let gameState = {
+  running: false,
+  leavesCut: 0,
+  timeLeft: GAME_DURATION,
+  ants: [],
+  leaves: [],
+  particles: [],
+  lastTime: 0,
+  spawnTimer: 0,
+  leafSpawnTimer: 0
+};
+
+function resetGameState() {
+  gameState = {
+    running: false,
+    leavesCut: 0,
+    timeLeft: GAME_DURATION,
+    ants: [],
+    leaves: [],
+    particles: [],
+    lastTime: 0,
+    spawnTimer: 0,
+    leafSpawnTimer: 0
+  };
+  leavesCutEl.textContent = '0';
+  timeLeftEl.textContent = GAME_DURATION;
+}
+
+startBtn.addEventListener('click', () => {
+  resetGameState();
+  overlay.classList.add('hidden');
+  gameState.running = true;
+  gameState.lastTime = performance.now();
+  requestAnimationFrame(gameLoop);
+  startCountdown();
+});
+
+let countdownInterval;
+function startCountdown() {
+  if (countdownInterval) clearInterval(countdownInterval);
+  countdownInterval = setInterval(() => {
+    if (!gameState.running) {
+      clearInterval(countdownInterval);
+      return;
+    }
+    gameState.timeLeft--;
+    timeLeftEl.textContent = gameState.timeLeft;
+    if (gameState.timeLeft <= 0) {
+      clearInterval(countdownInterval);
+      endGame();
+    }
+  }, 1000);
+}
+
+// Spawn an ant (walks left-to-right or right-to-left, looking for a leaf)
+function spawnAnt() {
+  const fromLeft = Math.random() < 0.5;
+  const y = 60 + Math.random() * (canvas.height - 120);
+  gameState.ants.push({
+    x: fromLeft ? -30 : canvas.width + 30,
+    y,
+    vx: (fromLeft ? 1 : -1) * (35 + Math.random() * 20), // px/sec
+    carrying: null, // leaf object once picked up
+    legPhase: Math.random() * Math.PI * 2,
+    size: 8 + Math.random() * 3
+  });
+}
+
+function spawnLeaf() {
+  // Place leaves in random positions on the play field
+  const margin = 80;
+  gameState.leaves.push({
+    x: margin + Math.random() * (canvas.width - margin * 2),
+    y: 40 + Math.random() * (canvas.height - 80),
+    size: 18 + Math.random() * 8,
+    rotation: Math.random() * Math.PI * 2,
+    sway: Math.random() * Math.PI * 2,
+    cut: false
+  });
+}
+
+function spawnParticles(x, y, color, count = 8) {
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 40 + Math.random() * 60;
+    gameState.particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 0.8,
+      maxLife: 0.8,
+      color,
+      size: 2 + Math.random() * 3
+    });
+  }
+}
+
+// Click handler: cut a leaf if clicked
+canvas.addEventListener('click', e => {
+  if (!gameState.running) return;
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const cx = (e.clientX - rect.left) * scaleX;
+  const cy = (e.clientY - rect.top) * scaleY;
+
+  // Find topmost uncut leaf under click
+  for (let i = gameState.leaves.length - 1; i >= 0; i--) {
+    const l = gameState.leaves[i];
+    if (l.cut) continue;
+    const dx = cx - l.x;
+    const dy = cy - l.y;
+    if (dx * dx + dy * dy < l.size * l.size * 1.4) {
+      l.cut = true;
+      l.cutTime = performance.now();
+      spawnParticles(l.x, l.y, '#6ec76e', 12);
+      break;
+    }
+  }
+});
+
+function gameLoop(t) {
+  if (!gameState.running) return;
+  const dt = Math.min(0.05, (t - gameState.lastTime) / 1000);
+  gameState.lastTime = t;
+
+  update(dt);
+  draw();
+
+  requestAnimationFrame(gameLoop);
+}
+
+function update(dt) {
+  // Spawn ants periodically
+  gameState.spawnTimer -= dt;
+  if (gameState.spawnTimer <= 0) {
+    spawnAnt();
+    gameState.spawnTimer = 0.6 + Math.random() * 0.8;
+  }
+
+  // Spawn leaves periodically (keep ~4-6 on screen)
+  gameState.leafSpawnTimer -= dt;
+  const uncutLeaves = gameState.leaves.filter(l => !l.cut).length;
+  if (gameState.leafSpawnTimer <= 0 && uncutLeaves < 6) {
+    spawnLeaf();
+    gameState.leafSpawnTimer = 0.8 + Math.random() * 0.6;
+  }
+
+  // Move ants
+  for (let i = gameState.ants.length - 1; i >= 0; i--) {
+    const a = gameState.ants[i];
+    a.legPhase += dt * 12;
+
+    if (a.carrying) {
+      // Ant heading off-screen with leaf — original direction
+      a.x += a.vx * dt;
+      a.carrying.x = a.x;
+      a.carrying.y = a.y - 10;
+      a.carrying.rotation += dt * 2;
+    } else {
+      // Look for nearest cut leaf
+      let nearest = null, nd = Infinity;
+      for (const l of gameState.leaves) {
+        if (!l.cut || l.pickedUp) continue;
+        const dx = l.x - a.x;
+        const dy = l.y - a.y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < nd) { nd = d2; nearest = l; }
+      }
+      if (nearest && nd < 60 * 60) {
+        // Steer toward it
+        const dx = nearest.x - a.x;
+        const dy = nearest.y - a.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 12) {
+          // Pick it up
+          nearest.pickedUp = true;
+          a.carrying = nearest;
+          gameState.leavesCut++;
+          leavesCutEl.textContent = gameState.leavesCut;
+          spawnParticles(nearest.x, nearest.y, '#f0c862', 6);
+          if (gameState.leavesCut >= GAME_GOAL) {
+            // Win condition reached — finish remaining time as bonus
+            setTimeout(() => endGame(true), 400);
+          }
+        } else {
+          const speed = Math.abs(a.vx);
+          a.x += (dx / dist) * speed * dt;
+          a.y += (dy / dist) * speed * dt;
+        }
+      } else {
+        // Just wander
+        a.x += a.vx * dt;
+        a.y += Math.sin(a.legPhase * 0.3) * 8 * dt;
+      }
+    }
+
+    // Despawn off-screen
+    if (a.x < -50 || a.x > canvas.width + 50) {
+      if (a.carrying) {
+        // Leaf delivered, remove it from leaves array
+        const idx = gameState.leaves.indexOf(a.carrying);
+        if (idx >= 0) gameState.leaves.splice(idx, 1);
+      }
+      gameState.ants.splice(i, 1);
+    }
+  }
+
+  // Update particles
+  for (let i = gameState.particles.length - 1; i >= 0; i--) {
+    const p = gameState.particles[i];
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.vy += 80 * dt; // gravity
+    p.life -= dt;
+    if (p.life <= 0) gameState.particles.splice(i, 1);
+  }
+
+  // Clean up leaves that drifted off or were delivered without ant
+  for (let i = gameState.leaves.length - 1; i >= 0; i--) {
+    const l = gameState.leaves[i];
+    if (l.cut && !l.pickedUp) {
+      l.cutTime = l.cutTime || performance.now();
+      // Cut leaves wither if not picked up in 6 seconds
+      if (performance.now() - l.cutTime > 6000) {
+        gameState.leaves.splice(i, 1);
+      }
+    }
+    l.sway += dt;
+  }
+}
+
+function draw() {
+  // Background — soft forest floor with leaf litter
+  ctx.fillStyle = '#1a3d1f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Gradient overlay
+  const grad = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 50, canvas.width / 2, canvas.height / 2, canvas.width / 1.5);
+  grad.addColorStop(0, 'rgba(110, 170, 90, 0.15)');
+  grad.addColorStop(1, 'rgba(13, 42, 20, 0.6)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Subtle texture dots
+  ctx.fillStyle = 'rgba(110, 170, 90, 0.08)';
+  for (let i = 0; i < 80; i++) {
+    const x = (i * 137.5) % canvas.width;
+    const y = (i * 89.3) % canvas.height;
+    ctx.beginPath();
+    ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Draw leaves
+  for (const l of gameState.leaves) {
+    drawLeaf(l);
+  }
+
+  // Draw ants
+  for (const a of gameState.ants) {
+    drawAnt(a);
+  }
+
+  // Draw particles
+  for (const p of gameState.particles) {
+    const alpha = p.life / p.maxLife;
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawLeaf(l) {
+  ctx.save();
+  ctx.translate(l.x, l.y);
+  ctx.rotate(l.rotation + Math.sin(l.sway) * 0.1);
+
+  // Drop shadow
+  ctx.save();
+  ctx.translate(2, 3);
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.beginPath();
+  ctx.ellipse(0, 0, l.size, l.size * 0.6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  // Leaf body — bright green if uncut, faded if cut
+  if (l.cut) {
+    ctx.fillStyle = '#8fc97f';
+  } else {
+    const lg = ctx.createLinearGradient(-l.size, -l.size, l.size, l.size);
+    lg.addColorStop(0, '#a4d57a');
+    lg.addColorStop(1, '#5fa84a');
+    ctx.fillStyle = lg;
+  }
+
+  ctx.beginPath();
+  ctx.ellipse(0, 0, l.size, l.size * 0.6, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Vein
+  ctx.strokeStyle = 'rgba(40, 80, 30, 0.6)';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.moveTo(-l.size, 0);
+  ctx.lineTo(l.size, 0);
+  ctx.stroke();
+
+  // Side veins
+  ctx.lineWidth = 0.7;
+  for (let i = -2; i <= 2; i++) {
+    if (i === 0) continue;
+    ctx.beginPath();
+    ctx.moveTo(i * l.size / 3, 0);
+    ctx.lineTo(i * l.size / 3 + l.size / 4, (i > 0 ? -1 : 1) * l.size * 0.35);
+    ctx.stroke();
+  }
+
+  // Highlight for uncut leaves
+  if (!l.cut) {
+    ctx.fillStyle = 'rgba(255,255,255,0.18)';
+    ctx.beginPath();
+    ctx.ellipse(-l.size * 0.3, -l.size * 0.2, l.size * 0.3, l.size * 0.15, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Soft glow ring to indicate clickable
+    ctx.strokeStyle = 'rgba(240, 200, 98, 0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, l.size + 4, l.size * 0.6 + 4, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function drawAnt(a) {
+  ctx.save();
+  ctx.translate(a.x, a.y);
+  // Face direction of motion
+  if (a.vx < 0) ctx.scale(-1, 1);
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.beginPath();
+  ctx.ellipse(0, a.size + 2, a.size * 1.2, a.size * 0.3, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Legs (animated)
+  ctx.strokeStyle = '#2a1810';
+  ctx.lineWidth = 1.2;
+  ctx.lineCap = 'round';
+  for (let i = 0; i < 3; i++) {
+    const offset = (i - 1) * 3;
+    const swing = Math.sin(a.legPhase + i) * 3;
+    ctx.beginPath();
+    ctx.moveTo(offset, 0);
+    ctx.lineTo(offset + swing, a.size);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(offset, 0);
+    ctx.lineTo(offset - swing, -a.size * 0.6);
+    ctx.stroke();
+  }
+
+  // Body — three segments (head, thorax, abdomen)
+  ctx.fillStyle = '#3d2418';
+  // Abdomen (back)
+  ctx.beginPath();
+  ctx.ellipse(-a.size * 0.7, 0, a.size * 0.55, a.size * 0.45, 0, 0, Math.PI * 2);
+  ctx.fill();
+  // Thorax
+  ctx.beginPath();
+  ctx.arc(0, 0, a.size * 0.4, 0, Math.PI * 2);
+  ctx.fill();
+  // Head
+  ctx.beginPath();
+  ctx.arc(a.size * 0.6, 0, a.size * 0.4, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Highlight
+  ctx.fillStyle = 'rgba(255, 200, 150, 0.3)';
+  ctx.beginPath();
+  ctx.arc(0, -a.size * 0.15, a.size * 0.15, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Antennae
+  ctx.strokeStyle = '#2a1810';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(a.size * 0.6, -a.size * 0.2);
+  ctx.lineTo(a.size * 1.1, -a.size * 0.7);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(a.size * 0.6, -a.size * 0.2);
+  ctx.lineTo(a.size * 1.2, -a.size * 0.3);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function endGame(won) {
+  gameState.running = false;
+  if (countdownInterval) clearInterval(countdownInterval);
+
+  const success = won || gameState.leavesCut >= GAME_GOAL;
+
+  if (success) {
+    overlayTitle.textContent = 'Brilliant ♡';
+    overlayText.innerHTML = `You helped the ants carry <strong>${gameState.leavesCut} leaves</strong> home.<br>The album is ready.`;
+    startBtn.textContent = 'Open the album →';
+    startBtn.onclick = () => {
+      document.getElementById('gameView').classList.remove('active');
+      unlockAlbum();
+    };
+  } else {
+    overlayTitle.textContent = 'So close ♡';
+    overlayText.innerHTML = `You got <strong>${gameState.leavesCut}</strong> of ${GAME_GOAL}. Want to try once more?`;
+    startBtn.textContent = 'Try again';
+    startBtn.onclick = () => {
+      resetGameState();
+      overlay.classList.add('hidden');
+      gameState.running = true;
+      gameState.lastTime = performance.now();
+      requestAnimationFrame(gameLoop);
+      startCountdown();
+    };
+  }
+  overlay.classList.remove('hidden');
+}
+
 function unlockAlbum() {
   document.getElementById('huntView').classList.add('hidden');
+  document.getElementById('celebrationView').classList.remove('active');
+  document.getElementById('gameView').classList.remove('active');
   document.getElementById('albumView').classList.add('active');
   renderAlbumSection('fall2025');
   window.scrollTo({ top: 0, behavior: 'smooth' });
