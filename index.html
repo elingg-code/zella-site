@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>For Zella</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=JetBrains+Mono:wght@400;600&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #050814;
+  --tardis: #0a2e5c;
+  --tardis-deep: #061f3f;
+  --tardis-light: #1e4a8f;
+  --gold: #d4a542;
+  --gold-bright: #f0c862;
+  --cream: #ede4cf;
+  --paper: #f5ecd4;
+  --plum: #4a2858;
+  --rust: #b8533a;
+  --shadow: rgba(5,8,20,0.4);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--void);
+  color: var(--cream);
+  font-family: 'Fraunces', serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(30,74,143,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(74,40,88,0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(212,165,66,0.08) 0%, transparent 60%),
+    var(--void);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 28% 42%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 47% 8%, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 63% 73%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 78% 24%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 89% 55%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 8% 88%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 34% 91%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2px 2px at 55% 35%, rgba(240,200,98,0.5), transparent),
+    radial-gradient(2px 2px at 22% 65%, rgba(240,200,98,0.4), transparent);
+  pointer-events: none;
+  z-index: 0;
+  animation: twinkle 8s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* TARDIS decoration */
+.tardis-decor {
+  position: fixed;
+  bottom: -30px;
+  left: -40px;
+  width: 200px;
+  height: 360px;
+  z-index: 0;
+  opacity: 0.32;
+  pointer-events: none;
+  transform: rotate(-4deg);
+  filter: drop-shadow(0 0 40px rgba(212, 165, 66, 0.15)) drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+  animation: tardisFloat 8s ease-in-out infinite;
+}
+
+.tardis-decor svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes tardisFloat {
+  0%, 100% { transform: rotate(-4deg) translateY(0); }
+  50% { transform: rotate(-3.5deg) translateY(-6px); }
+}
+
+/* Hide TARDIS on small screens so it doesn't crowd the content */
+@media (max-width: 900px) {
+  .tardis-decor {
+    width: 140px;
+    height: 252px;
+    opacity: 0.22;
+    bottom: -20px;
+    left: -50px;
+  }
+}
+
+@media (max-width: 560px) {
+  .tardis-decor {
+    width: 110px;
+    height: 198px;
+    opacity: 0.18;
+    bottom: -10px;
+    left: -40px;
+  }
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.header {
+  text-align: center;
+  padding: 32px 0 16px;
+  position: relative;
+}
+
+.header .tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+  text-shadow: 0 0 12px rgba(212,165,66,0.5);
+}
+
+.header h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(38px, 7vw, 64px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  color: var(--cream);
+}
+
+.header h1 .accent {
+  color: var(--gold-bright);
+  font-weight: 700;
+  font-style: normal;
+  text-shadow: 0 0 24px rgba(240,200,98,0.4);
+}
+
+.header .sub {
+  font-family: 'Caveat', cursive;
+  font-size: 22px;
+  color: var(--gold);
+  margin-top: 8px;
+  opacity: 0.9;
+}
+
+.progress-wrap {
+  margin: 36px auto 8px;
+  max-width: 520px;
+  padding: 0 16px;
+}
+
+.progress-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  color: rgba(237,228,207,0.5);
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  height: 3px;
+  background: rgba(237,228,207,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--tardis-light), var(--gold-bright));
+  width: 0%;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px rgba(240,200,98,0.4);
+}
+
+.clue-stage {
+  margin-top: 40px;
+  position: relative;
+  min-height: 400px;
+}
+
+.clue-card {
+  background: linear-gradient(180deg, var(--tardis) 0%, var(--tardis-deep) 100%);
+  border-radius: 4px;
+  padding: 40px 36px;
+  box-shadow:
+    0 1px 2px var(--shadow),
+    0 20px 60px -16px rgba(10,46,92,0.6),
+    inset 0 1px 0 rgba(240,200,98,0.15),
+    inset 0 0 0 1px rgba(240,200,98,0.12);
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: cardIn 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+
+@keyframes cardIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.clue-card::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  border: 1px solid rgba(240,200,98,0.2);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.clue-card::after {
+  content: '';
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  opacity: 0.6;
+  box-shadow:
+    inset 0 0 0 3px var(--tardis-deep),
+    inset 0 0 0 4px var(--gold);
+}
+
+.clue-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.clue-number::before {
+  content: '◈';
+  font-size: 14px;
+}
+
+.riddle {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  line-height: 1.7;
+  color: var(--cream);
+  padding: 24px 0;
+  border-top: 1px solid rgba(240,200,98,0.2);
+  border-bottom: 1px solid rgba(240,200,98,0.2);
+  margin-bottom: 28px;
+  font-style: italic;
+  letter-spacing: 0.005em;
+  position: relative;
+  white-space: pre-line;
+}
+
+.video-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(240,200,98,0.3);
+  animation: videoIn 0.5s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+@keyframes videoIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.video-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(237,228,207,0.5);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  gap: 12px;
+  background: linear-gradient(135deg, #0a0a14, #1a1a2e);
+}
+
+.video-placeholder svg {
+  width: 40px;
+  height: 40px;
+  opacity: 0.5;
+}
+
+.answer-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.answer-input {
+  flex: 1;
+  background: rgba(5,8,20,0.4);
+  border: none;
+  border-bottom: 2px solid rgba(240,200,98,0.3);
+  padding: 14px 14px;
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  color: var(--cream);
+  outline: none;
+  transition: all 0.3s;
+  border-radius: 2px 2px 0 0;
+}
+
+.answer-input:focus {
+  border-bottom-color: var(--gold-bright);
+  background: rgba(5,8,20,0.6);
+  box-shadow: 0 4px 12px -4px rgba(240,200,98,0.2);
+}
+
+.answer-input::placeholder {
+  color: rgba(237,228,207,0.3);
+  font-style: italic;
+}
+
+.btn {
+  background: var(--gold);
+  color: var(--void);
+  border: none;
+  padding: 14px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+.btn:hover {
+  background: var(--gold-bright);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px -4px rgba(240,200,98,0.4);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: rgba(237,228,207,0.6);
+  border: 1px solid rgba(240,200,98,0.3);
+}
+
+.btn-ghost:hover {
+  background: rgba(240,200,98,0.08);
+  color: var(--gold-bright);
+  border-color: var(--gold-bright);
+  transform: none;
+  box-shadow: none;
+}
+
+.hint-section {
+  margin-top: 16px;
+  display: none;
+  animation: fadeIn 0.4s;
+}
+
+.hint-section.show { display: block; }
+
+.hint-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hint-label::before {
+  content: '◈';
+  font-size: 12px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.feedback {
+  font-family: 'Caveat', cursive;
+  font-size: 24px;
+  margin-top: 12px;
+  min-height: 32px;
+  text-align: center;
+}
+
+.feedback.wrong { color: var(--rust); }
+.feedback.right { color: var(--gold-bright); text-shadow: 0 0 12px rgba(240,200,98,0.5); }
+
+.gate {
+  text-align: center;
+}
+
+.gate h2 {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 36px;
+  margin-bottom: 12px;
+  color: var(--cream);
+}
+
+.gate .gate-sub {
+  font-family: 'Fraunces', serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: rgba(237,228,207,0.7);
+  max-width: 480px;
+  margin: 0 auto 32px;
+  font-style: italic;
+}
+
+.coord-input-row {
+  display: flex;
+  gap: 12px;
+  max-width: 360px;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+.coord-input {
+  width: 140px;
+  text-align: center;
+  background: rgba(5,8,20,0.4);
+  border: none;
+  border-bottom: 2px solid rgba(240,200,98,0.3);
+  padding: 14px 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  outline: none;
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  border-radius: 2px 2px 0 0;
+}
+
+.coord-input:focus {
+  border-bottom-color: var(--gold-bright);
+  background: rgba(5,8,20,0.6);
+}
+
+.album-view { display: none; }
+.album-view.active { display: block; }
+.hunt-view.hidden { display: none; }
+
+.album-header {
+  text-align: center;
+  padding: 48px 0 24px;
+}
+
+.album-header .label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: 0 0 12px rgba(212,165,66,0.4);
+}
+
+.album-header h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(44px, 8vw, 72px);
+  line-height: 1;
+  margin: 12px 0;
+  color: var(--cream);
+}
+
+.album-header h1 em {
+  color: var(--gold-bright);
+  text-shadow: 0 0 24px rgba(240,200,98,0.3);
+}
+
+.album-header .for {
+  font-family: 'Caveat', cursive;
+  color: var(--gold);
+  font-size: 24px;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 32px 0 8px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 12px 18px;
+  cursor: pointer;
+  color: rgba(237,228,207,0.5);
+  border-bottom: 2px solid transparent;
+  transition: all 0.25s;
+}
+
+.tab:hover { color: var(--cream); }
+
+.tab.active {
+  color: var(--gold-bright);
+  border-bottom-color: var(--gold-bright);
+}
+
+.section-intro {
+  text-align: center;
+  margin: 32px auto 24px;
+  max-width: 520px;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 17px;
+  color: rgba(237,228,207,0.7);
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.photo-slot {
+  aspect-ratio: 3 / 4;
+  background: var(--tardis-deep);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(240,200,98,0.15);
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.photo-slot:hover {
+  transform: translateY(-2px) rotate(-0.5deg);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(240,200,98,0.4);
+}
+
+.photo-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-slot .empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(237,228,207,0.3);
+  text-align: center;
+  padding: 12px;
+  gap: 8px;
+}
+
+.photo-slot .empty svg {
+  width: 24px;
+  height: 24px;
+  opacity: 0.3;
+}
+
+.photo-slot.mystery {
+  background: linear-gradient(135deg, var(--tardis), var(--plum));
+  cursor: default;
+}
+
+.photo-slot.mystery:hover { transform: none; }
+
+.photo-slot.mystery .empty {
+  color: rgba(237,228,207,0.85);
+  font-size: 11px;
+}
+
+.mystery-symbol {
+  font-family: 'Fraunces', serif;
+  font-size: 48px;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--gold-bright);
+  margin-bottom: 8px;
+  text-shadow: 0 0 20px rgba(240,200,98,0.5);
+}
+
+.final-message {
+  margin: 60px auto 0;
+  max-width: 600px;
+  padding: 40px 36px;
+  background: linear-gradient(180deg, var(--tardis) 0%, var(--tardis-deep) 100%);
+  border-radius: 4px;
+  box-shadow: 0 20px 60px -16px rgba(10,46,92,0.6), inset 0 0 0 1px rgba(240,200,98,0.12);
+  position: relative;
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  line-height: 1.7;
+  text-align: center;
+  color: var(--cream);
+}
+
+.final-message::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  border: 1px solid rgba(240,200,98,0.2);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.final-message .sig {
+  font-family: 'Caveat', cursive;
+  font-size: 28px;
+  color: var(--gold-bright);
+  margin-top: 16px;
+}
+
+@keyframes burst {
+  0% { transform: translate(0, 0) scale(0); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(1); opacity: 0; }
+}
+
+.sparkle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 100;
+  animation: burst 1.4s ease-out forwards;
+  box-shadow: 0 0 12px currentColor;
+}
+
+.button-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+@media (max-width: 560px) {
+  .container { padding: 20px 16px 60px; }
+  .clue-card { padding: 32px 22px; }
+  .riddle { font-size: 18px; padding: 20px 0; }
+  .gate h2 { font-size: 28px; }
+  .coord-input { width: 120px; }
+  .answer-row { flex-direction: column; }
+  .answer-row .btn { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- Decorative TARDIS phone booth, fixed in background -->
+<div class="tardis-decor" aria-hidden="true">
+  <svg viewBox="0 0 200 360" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="tardisBody" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#1e4a8f"/>
+        <stop offset="50%" stop-color="#0a2e5c"/>
+        <stop offset="100%" stop-color="#061f3f"/>
+      </linearGradient>
+      <linearGradient id="tardisPanel" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0f3a73"/>
+        <stop offset="100%" stop-color="#072447"/>
+      </linearGradient>
+      <radialGradient id="tardisLamp" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0%" stop-color="#fff4d0"/>
+        <stop offset="40%" stop-color="#f0c862"/>
+        <stop offset="100%" stop-color="#d4a542" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+
+    <!-- Lamp glow halo -->
+    <circle cx="100" cy="40" r="38" fill="url(#tardisLamp)" opacity="0.7">
+      <animate attributeName="opacity" values="0.5;0.85;0.5" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Roof base -->
+    <rect x="34" y="62" width="132" height="10" fill="#061f3f" stroke="#d4a542" stroke-width="0.5" opacity="0.9"/>
+
+    <!-- "POLICE BOX" sign panels -->
+    <rect x="38" y="74" width="124" height="22" fill="#0a2e5c" stroke="#d4a542" stroke-width="0.4"/>
+    <text x="100" y="89" text-anchor="middle" font-family="Georgia, serif" font-size="9" font-weight="bold" fill="#f0c862" letter-spacing="1">POLICE BOX</text>
+
+    <!-- Top frame ridge -->
+    <rect x="40" y="98" width="120" height="4" fill="#061f3f"/>
+
+    <!-- Main body -->
+    <rect x="42" y="102" width="116" height="248" fill="url(#tardisBody)" stroke="#d4a542" stroke-width="0.5" opacity="0.95"/>
+
+    <!-- Vertical center divider (the two doors) -->
+    <line x1="100" y1="102" x2="100" y2="350" stroke="#061f3f" stroke-width="1.5"/>
+
+    <!-- Left door panels (top and bottom) -->
+    <rect x="50" y="112" width="44" height="58" fill="url(#tardisPanel)" stroke="#d4a542" stroke-width="0.3" opacity="0.8"/>
+    <rect x="50" y="178" width="44" height="58" fill="url(#tardisPanel)" stroke="#d4a542" stroke-width="0.3" opacity="0.8"/>
+    <rect x="50" y="244" width="44" height="58" fill="url(#tardisPanel)" stroke="#d4a542" stroke-width="0.3" opacity="0.8"/>
+
+    <!-- Right door panels -->
+    <rect x="106" y="112" width="44" height="58" fill="url(#tardisPanel)" stroke="#d4a542" stroke-width="0.3" opacity="0.8"/>
+    <rect x="106" y="178" width="44" height="58" fill="url(#tardisPanel)" stroke="#d4a542" stroke-width="0.3" opacity="0.8"/>
+    <rect x="106" y="244" width="44" height="58" fill="url(#tardisPanel)" stroke="#d4a542" stroke-width="0.3" opacity="0.8"/>
+
+    <!-- Windows (top panel of each door, glowing) -->
+    <rect x="55" y="117" width="34" height="22" fill="#1a2a4a" stroke="#d4a542" stroke-width="0.3"/>
+    <rect x="111" y="117" width="34" height="22" fill="#1a2a4a" stroke="#d4a542" stroke-width="0.3"/>
+    <!-- Window panes -->
+    <line x1="72" y1="117" x2="72" y2="139" stroke="#061f3f" stroke-width="0.5"/>
+    <line x1="55" y1="128" x2="89" y2="128" stroke="#061f3f" stroke-width="0.5"/>
+    <line x1="128" y1="117" x2="128" y2="139" stroke="#061f3f" stroke-width="0.5"/>
+    <line x1="111" y1="128" x2="145" y2="128" stroke="#061f3f" stroke-width="0.5"/>
+
+    <!-- Soft window glow -->
+    <rect x="55" y="117" width="34" height="22" fill="#f0c862" opacity="0.08">
+      <animate attributeName="opacity" values="0.05;0.15;0.05" dur="4s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="111" y="117" width="34" height="22" fill="#f0c862" opacity="0.08">
+      <animate attributeName="opacity" values="0.05;0.15;0.05" dur="4s" repeatCount="indefinite"/>
+    </rect>
+
+    <!-- Door handle / notice plaque -->
+    <rect x="55" y="200" width="34" height="14" fill="#0a2e5c" stroke="#d4a542" stroke-width="0.3"/>
+    <rect x="111" y="200" width="34" height="14" fill="#0a2e5c" stroke="#d4a542" stroke-width="0.3"/>
+
+    <!-- Base plinth -->
+    <rect x="36" y="348" width="128" height="8" fill="#061f3f" stroke="#d4a542" stroke-width="0.4"/>
+
+    <!-- Top lamp housing -->
+    <rect x="92" y="48" width="16" height="14" fill="#061f3f" stroke="#d4a542" stroke-width="0.4"/>
+    <!-- Lamp itself -->
+    <circle cx="100" cy="44" r="5" fill="#f0c862" opacity="0.95">
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Lamp top finial -->
+    <rect x="98" y="32" width="4" height="8" fill="#061f3f"/>
+    <rect x="96" y="28" width="8" height="4" fill="#061f3f"/>
+  </svg>
+</div>
+
+<div class="container">
+
+  <div class="hunt-view" id="huntView">
+
+    <header class="header">
+      <div class="tag">⟡ A Scavenger Hunt ⟡</div>
+      <h1>For <span class="accent">Zella</span></h1>
+      <div class="sub">~ from your favorite little baby ~</div>
+    </header>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressText">Clue 1 of 10</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="clue-stage" id="clueStage"></div>
+
+  </div>
+
+  <div class="album-view" id="albumView">
+    <header class="album-header">
+      <div class="label">⟡ The TARDIS Opens ⟡</div>
+      <h1>Us, <em>so far.</em></h1>
+      <div class="for">for google · for buddy · for Zella</div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-section="fall2025">Fall 2025</button>
+      <button class="tab" data-section="winter2026">Winter 2026</button>
+      <button class="tab" data-section="summer2026">Summer 2026</button>
+    </div>
+
+    <div class="section-intro" id="sectionIntro">
+      The beginning of everything.
+    </div>
+
+    <div class="photo-grid" id="photoGrid"></div>
+
+    <div class="final-message" id="finalMessageBox">
+      <p id="finalMessageText">[Your final message will go here — see the Opus prompt for help drafting it.]</p>
+      <div class="sig">— yours, ostensibly</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============== CLUE DATA ==============
+// To add a video hint: replace `video: null` with `video: "YOUR_YOUTUBE_ID"`
+// (the ID is the part after v= in a YouTube URL, e.g. "dQw4w9WgXcQ")
+const clues = [
+  {
+    // 1 — Lightbulb (the opener, kept easiest)
+    riddle: "I am born of glass and threaded with fire,\nA small sun that hums on a copper wire.\nA boy once claimed I lived in his head —\nAnd on that absurd, glowing thread\nHe asked a girl to walk with him instead.\n\nWhat am I?",
+    answers: ["lightbulb", "light bulb", "a lightbulb", "a light bulb", "the lightbulb", "bulb"],
+    video: null
+  },
+  {
+    // 2 — Torque
+    riddle: "I am the reason a wrench can win.\nI am the spin inside the spin.\nI'm what the door knows when it swings,\nThe quiet violence in turning things.\nA boy made a joke of me once, in a hall —\nAnd a girl laughed first, before falling at all.\n\nName me. (Five letters.)",
+    answers: ["torque"],
+    video: null
+  },
+  {
+    // 3 — Ostensibly
+    riddle: "I am the word that means it seems,\nA polished mask on simple themes.\nHe drops me into ordinary speech\nLike I'm a fruit just out of reach.\nYou tease the boy who can't let me go —\nWhat ten-letter word am I, that he loves so?",
+    answers: ["ostensibly"],
+    video: null
+  },
+  {
+    // 4 — This Time Tomorrow
+    riddle: "I am the song you sent him first —\nA British band, a wandering verse,\nAn airplane window, a hopeful spell,\nA promise dressed as a farewell.\nA boy looks down at a country small,\nAnd wonders where he'll be at all.\n\nName me.",
+    answers: ["this time tomorrow"],
+    video: null
+  },
+  {
+    // 5 — American Spirit Yellows
+    riddle: "I come in a hive of cardboard and gold,\nStriped like an insect, ten thousand sold.\nMy chief wears feathers, my smoke is true —\nA native bird in a yellow hue.\nThe sun on my pack is the color you choose,\nYou carry a swarm of me — name my hues.",
+    answers: ["american spirit yellows", "american spirit yellow", "american spirits yellows", "american spirits yellow"],
+    video: null
+  },
+  {
+    // 6 — I'm so in love with you
+    riddle: "Three words were waiting at the door,\nBut three felt heavier than the floor.\nSo he reached for one to slip between —\nA small adverb to soften the scene.\nFive words now where three would do,\nA cowardly grace, an honest brew.\nThe extra word means very much,\nA quiet hand asking for touch.\n\nWhat did he say to you, then?",
+    answers: ["i'm so in love with you", "im so in love with you", "i am so in love with you"],
+    video: null
+  },
+  {
+    // 7 — Google
+    riddle: "I am the name he calls you by\nWhen the answer falls out of the sky\nAnd lands, somehow, between your eyes.\nSix letters. A verb. A noun. A whole way\nOf knowing things he could not say.\n\nWhat does he call you?",
+    answers: ["google"],
+    video: null
+  },
+  {
+    // 8 — Buddy
+    riddle: "I am the softer of the two —\nThe one he says when reaching through\nThe dark to find your hand at night.\nFive letters. A small, plain light.\nNot clever. Not loud. Not new.\nJust the word that means: it's you.\n\nWhat is the name?",
+    answers: ["buddy"],
+    video: null
+  },
+  {
+    // 9 — Bigger on the inside (Dr Who themed bridge)
+    riddle: "I am the line every traveler knows,\nThe first surprised gasp when the blue door shows.\nFour small words for an impossible space —\nA universe folded inside one place.\nSay them aloud and the lock will turn:\n___ ___ ___ ___.\n\n(Four words. The Doctor's favorite trick.)",
+    answers: ["bigger on the inside", "it's bigger on the inside", "its bigger on the inside"],
+    video: null
+  },
+  {
+    // 10 — Street name (final clue before the coordinate gate)
+    riddle: "I am a building where minds are bent,\nWhere torque was taught and a boy was sent\nTo say a stupid thing to a girl one day.\nMy address has a number, a city, a way —\nBut you only need my street, plain and small.\nIt rhymes with fate. It rhymes with hall.\n\nWhat is my street?",
+    answers: ["state", "state st", "state street", "s state", "s state st", "south state", "south state st", "south state street", "s state street"],
+    video: null
+  }
+];
+
+let currentIdx = 0;
+
+const stage = document.getElementById('clueStage');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const progressPct = document.getElementById('progressPct');
+
+function updateProgress() {
+  const pct = Math.round((currentIdx / clues.length) * 100);
+  progressFill.style.width = pct + '%';
+  progressText.textContent = currentIdx < clues.length ? `Clue ${currentIdx + 1} of ${clues.length}` : 'Final lock';
+  progressPct.textContent = pct + '%';
+}
+
+function normalize(s) {
+  return s.toLowerCase().trim().replace(/[.,!?'"]/g, '').replace(/\s+/g, ' ');
+}
+
+function renderClue(idx) {
+  const clue = clues[idx];
+  stage.innerHTML = '';
+
+  const card = document.createElement('div');
+  card.className = 'clue-card';
+
+  let videoHTML = '';
+  if (clue.video) {
+    videoHTML = `
+      <div class="video-frame">
+        <iframe src="https://www.youtube.com/embed/${clue.video}?rel=0" allowfullscreen></iframe>
+      </div>`;
+  } else {
+    videoHTML = `
+      <div class="video-frame">
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/>
+          </svg>
+          <span>Video hint · coming soon</span>
+        </div>
+      </div>`;
+  }
+
+  card.innerHTML = `
+    <div class="clue-number">Clue ${String(idx + 1).padStart(2, '0')} of 10</div>
+    <div class="riddle">${clue.riddle}</div>
+    <div class="answer-row">
+      <input class="answer-input" id="answerInput" type="text" placeholder="your answer..." autocomplete="off" />
+      <button class="btn" id="submitBtn">Submit</button>
+    </div>
+    <div class="button-row">
+      <button class="btn btn-ghost" id="hintBtn">Need a hint?</button>
+    </div>
+    <div class="hint-section" id="hintSection">
+      <div class="hint-label">Video hint</div>
+      ${videoHTML}
+    </div>
+    <div class="feedback" id="feedback"></div>
+  `;
+  stage.appendChild(card);
+
+  const input = document.getElementById('answerInput');
+  const submitBtn = document.getElementById('submitBtn');
+  const hintBtn = document.getElementById('hintBtn');
+  const hintSection = document.getElementById('hintSection');
+  const feedback = document.getElementById('feedback');
+
+  input.focus();
+
+  hintBtn.addEventListener('click', () => {
+    hintSection.classList.add('show');
+    hintBtn.style.display = 'none';
+  });
+
+  function tryAnswer() {
+    const v = normalize(input.value);
+    if (!v) return;
+    const ok = clue.answers.some(a => normalize(a) === v);
+    if (ok) {
+      feedback.textContent = randomWin();
+      feedback.className = 'feedback right';
+      submitBtn.disabled = true;
+      input.disabled = true;
+      setTimeout(() => {
+        currentIdx++;
+        updateProgress();
+        if (currentIdx < clues.length) renderClue(currentIdx);
+        else renderGate();
+      }, 1100);
+    } else {
+      feedback.textContent = randomMiss();
+      feedback.className = 'feedback wrong';
+      input.select();
+    }
+  }
+
+  submitBtn.addEventListener('click', tryAnswer);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') tryAnswer(); });
+}
+
+function randomWin() {
+  const arr = ['yes yes yes ♡', "that's my google", 'correct, buddy', 'allons-y ♡', 'brilliant ♡', 'ostensibly correct', 'fantastic.'];
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+function randomMiss() {
+  const arr = ['not quite ♡', 'so close', 'try again, buddy', 'hmm, nope', 'the TARDIS is unimpressed', 'almost — keep going'];
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function renderGate() {
+  stage.innerHTML = '';
+  const card = document.createElement('div');
+  card.className = 'gate clue-card';
+  card.innerHTML = `
+    <div class="clue-number">⟡ The Final Lock ⟡</div>
+    <h2>Where did we start?</h2>
+    <div class="riddle" style="text-align:left;">Every place on Earth has two numbers —
+A latitude that climbs from the equator's slumbers,
+A longitude that runs from a line through Greenwich Park.
+Together they pin one room in the dark.
+The room where a boy with a lightbulb stood,
+The room where a girl laughed at torque (she shouldn't, but should).
+
+Give me the coordinates of where we first met.
+Round each number to <strong>four decimal places</strong>.
+Separate them with a <strong>comma</strong>.
+
+Format: <em>latitude, longitude</em></div>
+    <div class="coord-input-row" style="max-width:420px;">
+      <input class="coord-input" id="coordInput" type="text" placeholder="lat, lng  (e.g. 12.3456, -78.9012)" autocomplete="off" style="width:100%;" />
+    </div>
+    <div style="margin-top:24px;">
+      <button class="btn" id="unlockBtn">Unlock the TARDIS</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <div style="margin-top:24px;">
+      <button class="btn btn-ghost" id="gateHintBtn">need a hint?</button>
+    </div>
+    <div class="hint-section" id="gateHintSection">
+      <div class="hint-label">Video hint</div>
+      <div class="video-frame">
+        <div class="video-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/>
+          </svg>
+          <span>Video hint · coming soon</span>
+        </div>
+      </div>
+    </div>
+  `;
+  stage.appendChild(card);
+  progressFill.style.width = '100%';
+  progressText.textContent = 'Final lock';
+  progressPct.textContent = '100%';
+
+  const coordIn = document.getElementById('coordInput');
+  const btn = document.getElementById('unlockBtn');
+  const fb = document.getElementById('feedback');
+  const hintBtn = document.getElementById('gateHintBtn');
+  const hintSection = document.getElementById('gateHintSection');
+
+  hintBtn.addEventListener('click', () => {
+    hintSection.classList.add('show');
+    hintBtn.style.display = 'none';
+  });
+
+  coordIn.focus();
+
+  function tryUnlock() {
+    const raw = coordIn.value.trim();
+    const parts = raw.split(',').map(p => p.trim());
+    if (parts.length !== 2) {
+      fb.textContent = 'two numbers, separated by a comma ♡';
+      fb.className = 'feedback wrong';
+      return;
+    }
+    const lat = parseFloat(parts[0]);
+    const lng = parseFloat(parts[1]);
+    if (isNaN(lat) || isNaN(lng)) {
+      fb.textContent = 'numbers please, google ♡';
+      fb.className = 'feedback wrong';
+      return;
+    }
+    // Target: 42.2768, -83.7368. Tolerance: ±0.001 (~a city block).
+    if (Math.abs(lat - 42.2768) < 0.001 && Math.abs(lng - (-83.7368)) < 0.001) {
+      fb.textContent = '♡♡♡';
+      fb.className = 'feedback right';
+      btn.disabled = true;
+      coordIn.disabled = true;
+      burstSparkles();
+      setTimeout(unlockAlbum, 900);
+    } else {
+      fb.textContent = 'close but not quite ♡';
+      fb.className = 'feedback wrong';
+    }
+  }
+
+  btn.addEventListener('click', tryUnlock);
+  coordIn.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+}
+
+function burstSparkles() {
+  const colors = ['#f0c862', '#d4a542', '#1e4a8f', '#ede4cf'];
+  for (let i = 0; i < 50; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.style.left = (window.innerWidth / 2) + 'px';
+    s.style.top = (window.innerHeight / 2) + 'px';
+    s.style.background = colors[Math.floor(Math.random() * colors.length)];
+    s.style.color = colors[Math.floor(Math.random() * colors.length)];
+    s.style.setProperty('--tx', (Math.random() * 500 - 250) + 'px');
+    s.style.setProperty('--ty', (Math.random() * 500 - 250) + 'px');
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1500);
+  }
+}
+
+const albumData = {
+  fall2025: {
+    intro: "The beginning of everything. 500 S State St. A lightbulb joke. A laugh I'm still chasing.",
+    photos: [
+      { src: "" },
+      { src: "" },
+      { src: "" },
+      { src: "" },
+      { src: "" },
+      { src: "" }
+    ]
+  },
+  winter2026: {
+    intro: "Cold months. Warm everything else. American Spirit smoke curling into snow.",
+    photos: [
+      { src: "" },
+      { src: "" },
+      { src: "" },
+      { src: "" },
+      { src: "" },
+      { src: "" }
+    ]
+  },
+  summer2026: {
+    intro: "Not yet. But coming. The best part is, we don't know what's in this section yet — we just know we'll fill it together.",
+    photos: [],
+    mystery: true
+  }
+};
+
+function renderAlbumSection(key) {
+  const data = albumData[key];
+  document.getElementById('sectionIntro').textContent = data.intro;
+  const grid = document.getElementById('photoGrid');
+  grid.innerHTML = '';
+
+  if (data.mystery) {
+    for (let i = 0; i < 4; i++) {
+      const tile = document.createElement('div');
+      tile.className = 'photo-slot mystery';
+      tile.innerHTML = `
+        <div class="empty">
+          <div class="mystery-symbol">?</div>
+          <span>to be made</span>
+        </div>
+      `;
+      grid.appendChild(tile);
+    }
+    return;
+  }
+
+  data.photos.forEach((p, i) => {
+    const tile = document.createElement('div');
+    tile.className = 'photo-slot';
+    if (p.src) {
+      tile.innerHTML = `<img src="${p.src}" alt="memory ${i + 1}" />`;
+    } else {
+      tile.innerHTML = `
+        <div class="empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="5" width="18" height="14" rx="1"/>
+            <circle cx="8.5" cy="10.5" r="1.5"/>
+            <path d="M21 15l-5-5L5 19"/>
+          </svg>
+          <span>photo ${String(i + 1).padStart(2, '0')}</span>
+        </div>
+      `;
+    }
+    grid.appendChild(tile);
+  });
+}
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    renderAlbumSection(t.dataset.section);
+  });
+});
+
+function unlockAlbum() {
+  document.getElementById('huntView').classList.add('hidden');
+  document.getElementById('albumView').classList.add('active');
+  renderAlbumSection('fall2025');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+updateProgress();
+renderClue(0);
+</script>
+
+</body>
+</html>
